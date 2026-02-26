@@ -369,7 +369,7 @@ SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007
     })
     .then(function(r) { return r.json(); })
     .then(function(d) {
-      if (d.success) { if (btn) { btn.textContent = 'Submitted \u2713'; btn.style.background = '#16a34a'; } form.reset(); }
+      if (d.success) { if (btn) { btn.textContent = 'Submitted \u2713'; btn.style.background = '#16a34a'; } form.reset(); setTimeout(function() { if (btn) { btn.textContent = orig; btn.style.background = ''; btn.disabled = false; } }, 3000); }
       else throw new Error();
     })
     .catch(function() { if (btn) { btn.disabled = false; btn.textContent = orig; btn.style.background = ''; } });

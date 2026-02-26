@@ -5694,6 +5694,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if (data.success) {
         if (btn) { btn.textContent = 'Submitted \u2713'; btn.style.background = '#16a34a'; }
         form.reset();
+        setTimeout(function() { if (btn) { btn.textContent = origText; btn.style.background = ''; btn.disabled = false; } }, 3000);
       } else { throw new Error(data.error || 'Failed'); }
     })
     .catch(function() {
