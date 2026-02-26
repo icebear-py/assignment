@@ -362,7 +362,7 @@ SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007
     var orig = btn ? btn.textContent : 'Submit Application';
     if (btn) { btn.disabled = true; btn.textContent = 'Sending...'; }
     var fd = new FormData(form);
-    fetch('http://localhost:5000/api/careers', {
+    fetch('https://02f2-2a09-bac5-3aee-1a96-00-2a6-17.ngrok-free.app/api/careers', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name: fd.get('name'), phone: fd.get('phone'), email: fd.get('email'), position: fd.get('position') || '', portfolio_link: fd.get('portfolio_link') || '', message: fd.get('message') || '' })

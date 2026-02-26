@@ -5679,7 +5679,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var origText = btn ? btn.textContent : 'Submit';
     if (btn) { btn.disabled = true; btn.textContent = 'Sending...'; btn.style.transition = 'background 0.3s'; }
     var fd = new FormData(form);
-    fetch('http://localhost:5000/api/contact', {
+    fetch('https://02f2-2a09-bac5-3aee-1a96-00-2a6-17.ngrok-free.app/api/contact', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
