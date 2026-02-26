@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard – Prodesk</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f4f4f5; min-height: 100vh; }
+  header { background: #111; color: #fff; padding: 16px 32px; display: flex; align-items: center; justify-content: space-between; }
+  header h1 { font-size: 18px; font-weight: 700; }
+  header button { background: transparent; border: 1px solid #555; color: #ccc; padding: 6px 14px; border-radius: 8px; cursor: pointer; font-size: 13px; }
+  header button:hover { border-color: #fff; color: #fff; }
+  .main { max-width: 1100px; margin: 32px auto; padding: 0 20px; }
+  .tabs { display: flex; gap: 8px; margin-bottom: 24px; }
+  .tab { padding: 10px 24px; border-radius: 10px; border: 2px solid #ddd; background: #fff; font-weight: 600; font-size: 14px; cursor: pointer; transition: all 0.2s; }
+  .tab.active { background: #111; color: #fff; border-color: #111; }
+  .badge { display: inline-block; background: #e5e7eb; color: #374151; border-radius: 99px; padding: 1px 8px; font-size: 12px; margin-left: 6px; }
+  .tab.active .badge { background: #333; color: #ccc; }
+  .section { display: none; }
+  .section.active { display: block; }
+  .card { background: #fff; border-radius: 14px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; }
+  th { background: #f9fafb; padding: 12px 16px; text-align: left; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #6b7280; border-bottom: 1px solid #e5e7eb; }
+  td { padding: 14px 16px; border-bottom: 1px solid #f3f4f6; font-size: 14px; color: #111; vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #fafafa; }
+  .empty { text-align: center; color: #9ca3af; padding: 48px; font-size: 15px; }
+  .loading { text-align: center; color: #6b7280; padding: 48px; }
+  .time { color: #9ca3af; font-size: 13px; }
+  .tag { display: inline-block; background: #eff6ff; color: #1d4ed8; border-radius: 6px; padding: 2px 8px; font-size: 12px; font-weight: 600; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Prodesk Admin</h1>
+  <button onclick="logout()">Logout</button>
+</header>
+<div class="main">
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('contacts')">Contacts <span class="badge" id="c-count">0</span></button>
+    <button class="tab" onclick="switchTab('careers')">Careers <span class="badge" id="j-count">0</span></button>
+  </div>
+
+  <div id="contacts-section" class="section active">
+    <div class="card">
+      <table>
+        <thead><tr><th>#</th><th>Name</th><th>Email</th><th>Phone</th><th>Message</th><th>Date</th></tr></thead>
+        <tbody id="contacts-body"><tr><td colspan="6" class="loading">Loading...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="careers-section" class="section">
+    <div class="card">
+      <table>
+        <thead><tr><th>#</th><th>Name</th><th>Email</th><th>Phone</th><th>Position</th><th>Portfolio</th><th>Date</th></tr></thead>
+        <tbody id="careers-body"><tr><td colspan="7" class="loading">Loading...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+  var token = localStorage.getItem('prodesk-admin');
+  if (!token) location.href = 'admin-login.html';
+
+  function logout() { localStorage.removeItem('prodesk-admin'); location.href = 'admin-login.html'; }
+
+  function switchTab(tab) {
+    document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
+    document.querySelectorAll('.section').forEach(function(s) { s.classList.remove('active'); });
+    event.currentTarget.classList.add('active');
+    document.getElementById(tab + '-section').classList.add('active');
+  }
+
+  function fmt(d) {
+    var dt = new Date(d);
+    return dt.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' + dt.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  function esc(s) { return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  fetch('http://localhost:5000/api/admin/contacts', { headers: { Authorization: 'Bearer ' + token } })
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      if (!d.success) { logout(); return; }
+      document.getElementById('c-count').textContent = d.data.length;
+      var html = d.data.length ? d.data.map(function(r, i) {
+        return '<tr><td>' + (i+1) + '</td><td>' + esc(r.name) + '</td><td>' + esc(r.email) + '</td><td>' + esc(r.phone) + '</td><td>' + (esc(r.message) || '<span style="color:#ccc">—</span>') + '</td><td class="time">' + fmt(r.createdAt) + '</td></tr>';
+      }).join('') : '<tr><td colspan="6" class="empty">No contacts yet</td></tr>';
+      document.getElementById('contacts-body').innerHTML = html;
+    })
+    .catch(function() { document.getElementById('contacts-body').innerHTML = '<tr><td colspan="6" class="empty">Failed to load</td></tr>'; });
+
+  fetch('http://localhost:5000/api/admin/careers', { headers: { Authorization: 'Bearer ' + token } })
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      if (!d.success) { logout(); return; }
+      document.getElementById('j-count').textContent = d.data.length;
+      var html = d.data.length ? d.data.map(function(r, i) {
+        var link = r.portfolio_link ? '<a href="' + esc(r.portfolio_link) + '" target="_blank" style="color:#2563eb">' + esc(r.portfolio_link).substring(0,30) + '…</a>' : '<span style="color:#ccc">—</span>';
+        return '<tr><td>' + (i+1) + '</td><td>' + esc(r.name) + '</td><td>' + esc(r.email) + '</td><td>' + esc(r.phone) + '</td><td>' + (r.position ? '<span class="tag">' + esc(r.position) + '</span>' : '<span style="color:#ccc">—</span>') + '</td><td>' + link + '</td><td class="time">' + fmt(r.createdAt) + '</td></tr>';
+      }).join('') : '<tr><td colspan="7" class="empty">No applications yet</td></tr>';
+      document.getElementById('careers-body').innerHTML = html;
+    })
+    .catch(function() { document.getElementById('careers-body').innerHTML = '<tr><td colspan="7" class="empty">Failed to load</td></tr>'; });
+</script>
+</body>
+</html>

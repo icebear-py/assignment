@@ -1,0 +1,1 @@
+chrome-extension://gjakohbhfclfjmhhlenfdkldieofkpjl/content-scripts/webrtc-shield.js
