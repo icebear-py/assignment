@@ -81,7 +81,7 @@
 
   function esc(s) { return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
-  fetch('https://02f2-2a09-bac5-3aee-1a96-00-2a6-17.ngrok-free.app/api/admin/contacts', { headers: { Authorization: 'Bearer ' + token } })
+  fetch('https://02f2-2a09-bac5-3aee-1a96-00-2a6-17.ngrok-free.app/api/admin/contacts', { headers: { Authorization: 'Bearer ' + token, 'ngrok-skip-browser-warning': 'true' } })
     .then(function(r) { return r.json(); })
     .then(function(d) {
       if (!d.success) { logout(); return; }
@@ -93,7 +93,7 @@
     })
     .catch(function() { document.getElementById('contacts-body').innerHTML = '<tr><td colspan="6" class="empty">Failed to load</td></tr>'; });
 
-  fetch('https://02f2-2a09-bac5-3aee-1a96-00-2a6-17.ngrok-free.app/api/admin/careers', { headers: { Authorization: 'Bearer ' + token } })
+  fetch('https://02f2-2a09-bac5-3aee-1a96-00-2a6-17.ngrok-free.app/api/admin/careers', { headers: { Authorization: 'Bearer ' + token, 'ngrok-skip-browser-warning': 'true' } })
     .then(function(r) { return r.json(); })
     .then(function(d) {
       if (!d.success) { logout(); return; }

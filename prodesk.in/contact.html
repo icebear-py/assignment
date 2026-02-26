@@ -5681,7 +5681,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var fd = new FormData(form);
     fetch('https://02f2-2a09-bac5-3aee-1a96-00-2a6-17.ngrok-free.app/api/contact', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
       body: JSON.stringify({
         name: fd.get('name'),
         phone: fd.get('phone'),
